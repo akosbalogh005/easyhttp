@@ -1,0 +1,27 @@
+# permissions for end users to view easyhttps.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: easyhttp-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: easyhttp
+    app.kubernetes.io/part-of: easyhttp
+    app.kubernetes.io/managed-by: kustomize
+  name: easyhttp-viewer-role
+rules:
+- apiGroups:
+  - httpapi.example.com
+  resources:
+  - easyhttps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - httpapi.example.com
+  resources:
+  - easyhttps/status
+  verbs:
+  - get

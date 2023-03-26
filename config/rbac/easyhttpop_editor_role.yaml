@@ -1,0 +1,31 @@
+# permissions for end users to edit easyhttps.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: easyhttp-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: easyhttp
+    app.kubernetes.io/part-of: easyhttp
+    app.kubernetes.io/managed-by: kustomize
+  name: easyhttp-editor-role
+rules:
+- apiGroups:
+  - httpapi.example.com
+  resources:
+  - easyhttps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - httpapi.example.com
+  resources:
+  - easyhttps/status
+  verbs:
+  - get
