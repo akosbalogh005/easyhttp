@@ -8,6 +8,8 @@ on:
 
 env:
   PLATFORMS: linux/amd64,linux/arm64
+
+
 jobs:
   docker:
     name: Docker
@@ -35,7 +37,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-
       - name: Determine image tag
         id: imagetag
         run: echo "value=${TAG_OR_BRANCH##*/}" >> $GITHUB_OUTPUT
@@ -47,8 +48,8 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          #password: ${{ secrets.CR_PAT }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CR_PAT }}
+          #password: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event_name == 'push' }}
 
       - name: Build easyhttp-operator
