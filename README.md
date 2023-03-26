@@ -55,9 +55,41 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 
 Install certificate manager (https://cert-manager.io/) if you want auto certificate manager.
 
+See:
+* https://cert-manager.io/docs/tutorials/acme/nginx-ingress/
+* https://cert-manager.io/docs/configuration/acme/http01/
+
+The installation provides HTTP01 challenge 
+
+See: 
+*  https://cert-manager.io/docs/configuration/acme/http01/
+*  https://letsencrypt.org/docs/challenge-types/
 
 
-## Spec
+
+How to install? See: https://cert-manager.io/docs/installation/
+
+install in nutshell:
+1) intall cert-manager
+```
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
+```
+
+2) create issuer(s)
+
+The samples below shows how to create acme letsencrypt issuer in namespace 'test'. As the operator is namescpase scoped the issuer should create the namesapace where the application is running. One of these should use in kind sepcification (certManIssuer).
+
+```
+kubectl create --edit -f https://raw.githubusercontent.com/cert-manager/website/master/content/docs/tutorials/acme/example/production-issuer.yaml -n test
+
+
+kubectl create --edit -f https://raw.githubusercontent.com/cert-manager/website/master/content/docs/tutorials/acme/example/staging-issuer.yaml  -n test
+```
+
+
+
+## Using the operator
+
 
 ### sample EasyHttp yml config 
 
@@ -83,8 +115,7 @@ spec:
   certManIssuer: "letsencrypt-staging"
 
 ```
-
-Spec Description:
+### Description
 - *host*: The HTTP request to this host will be routed to application
 - *replicas*: Deployment replicas
 - *image*: Application docker image
@@ -93,8 +124,13 @@ Spec Description:
 - *env*: Environment variable passed to the pod
 - *certManIssuer*: used certificate issuer
 
+## Installing operator on cluster
 
-## Getting Started
+
+
+
+
+## Develping - Getting Started
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
@@ -130,9 +166,6 @@ UnDeploy the controller from the cluster:
 ```sh
 make undeploy
 ```
-
-## Contributing
-// TODO(user): Add detailed information on how you would like others to contribute to this project
 
 ### How it works
 This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/).

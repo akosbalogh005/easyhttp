@@ -1,0 +1,28 @@
+name: CI
+on:
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - "README.md"
+      - "charts/**"
+      - ".github/workflows/chart-lint.yml"
+      - ".github/workflows/chart-release.yml"
+      - ".github/workflows/docker.yml"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Go 1.19
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.19
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Buld code
+        run: make
+
