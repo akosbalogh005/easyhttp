@@ -39,15 +39,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event_name == 'push' }}
 
-      - name: Build dast-operator
+      - name: Build easyhttp-operator
         uses: docker/build-push-action@v2
         with:
           tags: ghcr.io/akosbalogh005/easyhttp:${{ steps.imagetag.outputs.value }}
           file: Dockerfile
           platforms: ${{ env.PLATFORMS }}
           push: ${{ github.event_name == 'push' }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
           labels: |
             org.opencontainers.image.title=${{ github.event.repository.name }}
             org.opencontainers.image.description=${{ github.event.repository.description }}
