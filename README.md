@@ -9,9 +9,16 @@ resource is the EasyHttp oprator.
 
 Main features:
 - Creates deployment, service and ingress resource in cluster
-- Setup host based virtual hosting in ingress (https://kubernetes.io/docs/concepts/services-networking/ingress/#name-based-virtual-hosting)
+- Setup host based virtual hosting in ingress [host-based hosting](https://kubernetes.io/docs/concepts/services-networking/ingress/#name-based-virtual-hosting)
 - Support specification chages
 - Environment variables in application container can be setup
+
+Managed resources (green):
+![DAST OPERATOR](docs/easyhttp.png)
+
+
+## Limitation
+The rewrite possibility is missing from ingress. One host per application can be deployed.
 
 ## Prerequirements
 
@@ -19,7 +26,7 @@ Main features:
 
 By default ingress is not installed in k8s. In order to setup proper host based routing ingress controlled should be existed in cluster.
 
-See: https://kubernetes.io/docs/concepts/services-networking/ingress/
+[See ingress here](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 
 Check if ingress and issuers are exsisted:
 
@@ -43,7 +50,7 @@ The created issuer name should be set in operator kind specification (certManIss
 
 Installing ingress see the proper kubernetes implementation details.
 
-When using 'kind' (https://github.com/kubernetes-sigs/kind), see: https://kind.sigs.k8s.io/docs/user/ingress/
+When using [kind](https://github.com/kubernetes-sigs/kind) see ingress [here](https://kind.sigs.k8s.io/docs/user/ingress/)
 
 install nginx ingress in kind cluster: 
 ```
