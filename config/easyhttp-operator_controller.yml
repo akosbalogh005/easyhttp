@@ -448,7 +448,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: ghcr.io/akosbalogh005/easyhttp:1.0
+        image: ghcr.io/akosbalogh005/easyhttp:0.1
         livenessProbe:
           httpGet:
             path: /healthz
