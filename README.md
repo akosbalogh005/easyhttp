@@ -243,6 +243,9 @@ The following features / ideas will be implemented in the next version:
 - Implement acceptance tests
 - Releases:
   - create helm chart for operator after tagging
+- filtering of watched namespace
+
+
 
 
 
