@@ -49,7 +49,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-          #password: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event_name == 'push' }}
 
       - name: Build easyhttp-operator
