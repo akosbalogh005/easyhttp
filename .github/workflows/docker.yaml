@@ -59,8 +59,8 @@ jobs:
           file: Dockerfile
           platforms: ${{ env.PLATFORMS }}
           push: ${{ github.event_name == 'push' }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          #cache-from: type=local,src=/tmp/.buildx-cache
+          #cache-to: type=local,dest=/tmp/.buildx-cache
           labels: |
             org.opencontainers.image.title=${{ github.event.repository.name }}
             org.opencontainers.image.description=${{ github.event.repository.description }}
