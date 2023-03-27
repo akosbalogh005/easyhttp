@@ -26,4 +26,5 @@ Dockerfile.cross
 *~
 
 samples
+!config/samples
 kubernetes_operator.md

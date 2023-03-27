@@ -26,7 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	httpapiv1 "example.com/easyhttp/api/v1"
+	httpapiv1 "github.com/akosbalogh005/easyhttp-operator/api/v1"
 )
 
 // EasyHttpReconciler reconciles a EasyHttp object
@@ -35,9 +35,9 @@ type EasyHttpReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=httpapi.example.com,resources=easyhttps,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=httpapi.example.com,resources=easyhttps/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=httpapi.example.com,resources=easyhttps/finalizers,verbs=update
+//+kubebuilder:rbac:groups=httpapi.github.com,resources=easyhttps,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=httpapi.github.com,resources=easyhttps/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=httpapi.github.com,resources=easyhttps/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.

@@ -1,0 +1,20 @@
+---
+apiVersion: httpapi.github.com/v1
+kind: EasyHttp
+metadata:
+  name: kuard-1
+  labels:
+    app.kubernetes.io/name: easyhttp
+    app.kubernetes.io/instance: easyhttp-sample
+    app.kubernetes.io/part-of: easyhttp
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: easyhttp
+spec:
+  host: "example.net"
+  replicas: 1
+  image: "gcr.io/kuar-demo/kuard-amd64"
+  tag: "1"
+  port: 8080
+  env:
+    PORT: "8080"
+  certManIssuer: "letsencrypt-staging"

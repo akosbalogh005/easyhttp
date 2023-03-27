@@ -12,7 +12,7 @@ metadata:
   name: easyhttp-viewer-role
 rules:
 - apiGroups:
-  - httpapi.example.com
+  - httpapi.github.com
   resources:
   - easyhttps
   verbs:
@@ -20,7 +20,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - httpapi.example.com
+  - httpapi.github.com
   resources:
   - easyhttps/status
   verbs:

@@ -12,7 +12,7 @@ metadata:
   name: easyhttp-editor-role
 rules:
 - apiGroups:
-  - httpapi.example.com
+  - httpapi.github.com
   resources:
   - easyhttps
   verbs:
@@ -24,7 +24,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - httpapi.example.com
+  - httpapi.github.com
   resources:
   - easyhttps/status
   verbs:

@@ -94,7 +94,7 @@ kubectl create --edit -f https://raw.githubusercontent.com/cert-manager/website/
 ### sample EasyHttp yml config 
 
 ```
-apiVersion: httpapi.example.com/v1
+apiVersion: httpapi.github.com/v1
 kind: EasyHttp
 metadata:
   name: kuard-1

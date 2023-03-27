@@ -30,7 +30,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	httpapiv1 "example.com/easyhttp/api/v1"
+	httpapiv1 "github.com/akosbalogh005/easyhttp-operator/api/v1"
 	//+kubebuilder:scaffold:imports
 )
 

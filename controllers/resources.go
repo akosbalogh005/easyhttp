@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	httpapiv1 "example.com/easyhttp/api/v1"
+	httpapiv1 "github.com/akosbalogh005/easyhttp-operator/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	betav1 "k8s.io/api/networking/v1"
