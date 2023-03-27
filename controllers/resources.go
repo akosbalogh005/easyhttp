@@ -99,14 +99,20 @@ func initIngress(clientResource *httpapiv1.EasyHttp, serviceName string) *betav1
 	rule.Host = clientResource.Spec.Host
 	rule.IngressRuleValue.HTTP = &httpIngressRuleValue
 
-	tls := betav1.IngressTLS{
-		Hosts:      []string{clientResource.Spec.Host},
-		SecretName: strings.ReplaceAll(clientResource.Spec.Host, ".", "-") + "-tls",
-	}
+	if clientResource.Spec.CertManInssuer != "" {
+		tls := betav1.IngressTLS{
+			Hosts:      []string{clientResource.Spec.Host},
+			SecretName: strings.ReplaceAll(clientResource.Spec.Host, ".", "-") + "-tls",
+		}
+		ing.Spec = betav1.IngressSpec{
+			Rules: []betav1.IngressRule{rule},
+			TLS:   []betav1.IngressTLS{tls},
+		}
+	} else {
+		ing.Spec = betav1.IngressSpec{
+			Rules: []betav1.IngressRule{rule},
+		}
 
-	ing.Spec = betav1.IngressSpec{
-		Rules: []betav1.IngressRule{rule},
-		TLS:   []betav1.IngressTLS{tls},
 	}
 
 	return &ing

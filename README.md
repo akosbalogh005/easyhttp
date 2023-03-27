@@ -133,7 +133,20 @@ spec:
 
 ## Installing operator on cluster
 
+The operator can be installed using pre-defined kubernetes configuration. The operator will be installed into 'easyhttp-system' namespace.
 
+The following example install v1.0 of EasyHttp operator (CRD and controller)
+```
+kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/1.0/config/easyhttp-operator_crd.yml
+kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/1.0/config/easyhttp-operator_controller.yml
+```
+
+The git repo is [here](https://github.com/akosbalogh005/easyhttp-operator/). 
+The package is stored in [ghcr.io](https://github.com/akosbalogh005/easyhttp-operator/pkgs/container/easyhttp) repository.
+
+
+
+TODO: helm chart repository for easy installation and management
 
 
 
@@ -222,7 +235,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-## Future
+## TODOs in the future
 
 The following features / ideas will be implemented in the next version:
 - Adding multiple path to one host and (rewrite functionality) 
+- Implement proper unittests
+- Implement acceptance tests
+- Releases:
+  - create helm chart for operator after tagging
+
+
+

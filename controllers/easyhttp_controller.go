@@ -38,6 +38,10 @@ type EasyHttpReconciler struct {
 //+kubebuilder:rbac:groups=httpapi.github.com,resources=easyhttps,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=httpapi.github.com,resources=easyhttps/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=httpapi.github.com,resources=easyhttps/finalizers,verbs=update
+//+kubebuilder:rbac:groups="apps",resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="extensions",resources=ingresses,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="networking.k8s.io",resources=ingresses,verbs=get;list;watch;create;update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -172,14 +176,14 @@ func (r *EasyHttpReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	log.Info(fmt.Sprintf("Current Ingress is: %v (%v)", ing.Name, ing.UID))
 
 	if clientResource.Spec.CertManInssuer == "" {
-		log.Info("Certificate manager id disabled. Add certManIssuer to kind spec if necessary")
+		log.Info("Certificate manager is disabled. Add certManIssuer to kind spec if necessary")
 	} else {
 		log.Info(fmt.Sprintf("Using Certificate manager: %v", clientResource.Spec.CertManInssuer))
 	}
 
-	return ctrl.Result{Requeue: true}, nil
+	return ctrl.Result{}, nil
+	//return ctrl.Result{Requeue: true}, nil
 	//return ctrl.Result{RequeueAfter: time.Minute}, nil
-	//return ctrl.Result{}, nil
 }
 
 func (r *EasyHttpReconciler) createOrUpdate(ctx context.Context, req ctrl.Request, obj client.Object, clientResource *httpapiv1.EasyHttp, statusFlag *bool, isNew bool) error {
