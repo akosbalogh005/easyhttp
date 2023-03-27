@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: ghcr.io/akosbalogh005/easyhttp
-  newTag: "1.0"
+  newTag: "0.2"

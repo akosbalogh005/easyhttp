@@ -77,11 +77,17 @@ func initIngress(clientResource *httpapiv1.EasyHttp, serviceName string) *betav1
 		ing.Annotations["acme.cert-manager.io/http01-edit-in-place"] = "true"
 		ing.Annotations["cert-manager.io/issuer"] = clientResource.Spec.CertManInssuer
 	}
-	//ing.Annotations = map[string]string{"nginx.ingress.kubernetes.io/rewrite-target": "/$2"}
+	if clientResource.Spec.Path != "" && clientResource.Spec.Path != "/" {
+		ing.Annotations = map[string]string{"nginx.ingress.kubernetes.io/rewrite-target": "/$2"}
+	}
 
 	pfrx := betav1.PathTypePrefix
 
 	p := "/"
+	if clientResource.Spec.Path != "" {
+		p = clientResource.Spec.Path + "(/|$)(.*)"
+	}
+
 	ingressPath := betav1.HTTPIngressPath{
 		Path:     p,
 		PathType: &pfrx,

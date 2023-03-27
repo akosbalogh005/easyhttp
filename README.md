@@ -10,7 +10,8 @@ resource is the EasyHttp oprator.
 Main features:
 - Creates deployment, service and ingress resource in cluster
 - Setup host based virtual hosting in ingress [host-based hosting](https://kubernetes.io/docs/concepts/services-networking/ingress/#name-based-virtual-hosting)
-- Support specification chages
+- Support multiple HTTP application with different path (prefix) in the same host
+- Support specification changes
 - Environment variables in application container can be setup
 
 Managed resources (green):
@@ -120,6 +121,7 @@ spec:
   env:
     PORT: "8080"
   certManIssuer: "letsencrypt-staging"
+  path: "/app2"
 
 ```
 ### Description
@@ -130,14 +132,15 @@ spec:
 - *port*: the HTTP port wher the application is listening
 - *env*: Environment variable passed to the pod
 - *certManIssuer*: used certificate issuer
+- *path*: the application path from outside (will be rewritten to the root of the container)
 
 ## Installing operator on cluster
 
 The operator can be installed using pre-defined kubernetes configuration. The operator will be installed into 'easyhttp-system' namespace.
 
-The following example install v0.1 of EasyHttp operator (CRD and controller)
+The following example install v0.2 of EasyHttp operator (CRD and controller)
 ```
-kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/0.1/config/easyhttp-operator.yml
+kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/0.2/config/easyhttp-operator.yml
 ```
 
 The git repo is [here](https://github.com/akosbalogh005/easyhttp-operator/). 
@@ -237,7 +240,7 @@ limitations under the License.
 ## TODOs in the future
 
 The following features / ideas will be implemented in the next version:
-- Adding multiple path to one host and (rewrite functionality) 
+- rewrite functionality with not only nginx ingress conroller
 - Implement proper unittests
 - Implement acceptance tests
 - Releases:

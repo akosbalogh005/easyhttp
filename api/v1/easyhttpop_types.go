@@ -31,6 +31,7 @@ type EasyHttpSpec struct {
 	// Host where the application is accesible from outside. Base of the Ingress route and certificate request
 	Host string `json:"host,omitempty"`
 	// Replicas of the HTTP server application
+	// +kubebuilder:validation:optional
 	Replicas *int32 `json:"replicas,omitempty"`
 	// Image of the application
 	Image string `json:"image,omitempty"`
@@ -42,6 +43,9 @@ type EasyHttpSpec struct {
 	Env map[string]string `json:"env,omitempty"`
 	// CertManInssuer issuer of cert manager (e.g 'letsencrypt-prod'). Cert manager is disabled when empty.
 	CertManInssuer string `json:"certManIssuer,omitempty"`
+	// Path is  where the application can be called (from outside). Currently supported only in nginx ingress!
+	// +kubebuilder:validation:optional
+	Path string `json:"path,omitempty"`
 }
 
 func nvl(v *int32) int32 {
@@ -57,6 +61,7 @@ func (e *EasyHttpSpec) IsEqual(o *EasyHttpSpec) bool {
 		e.ImageTag == o.ImageTag &&
 		e.Port == o.Port &&
 		e.CertManInssuer == o.CertManInssuer &&
+		e.Path == o.Path &&
 		nvl(e.Replicas) == nvl(o.Replicas)
 	if !ret {
 		return ret

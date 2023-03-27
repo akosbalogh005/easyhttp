@@ -52,6 +52,10 @@ spec:
               image:
                 description: Image of the application
                 type: string
+              path:
+                description: Path is  where the application can be called (from outside).
+                  Currently supported only in nginx ingress!
+                type: string
               port:
                 description: Port where the application (and srv) is listening
                 type: integer
@@ -96,6 +100,10 @@ spec:
                     type: string
                   image:
                     description: Image of the application
+                    type: string
+                  path:
+                    description: Path is  where the application can be called (from
+                      outside). Currently supported only in nginx ingress!
                     type: string
                   port:
                     description: Port where the application (and srv) is listening
