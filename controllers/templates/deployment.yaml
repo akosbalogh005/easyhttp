@@ -1,0 +1,136 @@
+typemeta:
+    kind: Deployment
+    apiversion: apps/v1
+objectmeta:
+    name: {{.Name}}
+    generatename: ""
+    namespace: {{.Namespace}}
+    selflink: ""
+    uid: ""
+    resourceversion: ""
+    generation: 0
+    creationtimestamp: "0001-01-01T00:00:00Z"
+    deletiontimestamp: null
+    deletiongraceperiodseconds: null
+    labels: {}
+    annotations: {}
+    ownerreferences: []
+    finalizers: []
+    managedfields: []
+spec:{{if .Spec.Replicas }}
+    replicas: {{.Spec.Replicas}}
+{{- else}}
+    replicas: 1
+{{- end}}
+    selector:
+        matchlabels:
+            app: {{.Name}}
+        matchexpressions: []
+    template:
+        objectmeta:
+            name: ""
+            generatename: ""
+            namespace: ""
+            selflink: ""
+            uid: ""
+            resourceversion: ""
+            generation: 0
+            creationtimestamp: "0001-01-01T00:00:00Z"
+            deletiontimestamp: null
+            deletiongraceperiodseconds: null
+            labels:
+                app: {{.Name}}
+            annotations: {}
+            ownerreferences: []
+            finalizers: []
+            managedfields: []
+        spec:
+            volumes: []
+            initcontainers: []
+            containers:
+                - name: {{.Name}}
+                  image: {{.Spec.Image}}:{{.Spec.ImageTag}}
+                  command: []
+                  args: []
+                  workingdir: ""
+                  ports:
+                    - name: {{.Name}}
+                      hostport: 0
+                      containerport: {{.Spec.Port}}
+                      protocol: ""
+                      hostip: ""
+                  envfrom: []
+                  env:{{if .Spec.Env }}{{ range $key, $value := .Spec.Env }}
+                    - name: {{ $key }}
+                      value: "{{ $value }}"
+                      valuefrom: null{{ end }}                  
+{{- else}} []{{- end}}
+                  resources:
+                    limits: {}
+                    requests: {}
+                    claims: []
+                  volumemounts: []
+                  volumedevices: []
+                  livenessprobe: null
+                  readinessprobe: null
+                  startupprobe: null
+                  lifecycle: null
+                  terminationmessagepath: ""
+                  terminationmessagepolicy: ""
+                  imagepullpolicy: ""
+                  securitycontext: null
+                  stdin: false
+                  stdinonce: false
+                  tty: false
+            ephemeralcontainers: []
+            restartpolicy: ""
+            terminationgraceperiodseconds: null
+            activedeadlineseconds: null
+            dnspolicy: ""
+            nodeselector: {}
+            serviceaccountname: ""
+            deprecatedserviceaccount: ""
+            automountserviceaccounttoken: null
+            nodename: ""
+            hostnetwork: false
+            hostpid: false
+            hostipc: false
+            shareprocessnamespace: null
+            securitycontext: null
+            imagepullsecrets: []
+            hostname: ""
+            subdomain: ""
+            affinity: null
+            schedulername: ""
+            tolerations: []
+            hostaliases: []
+            priorityclassname: ""
+            priority: null
+            dnsconfig: null
+            readinessgates: []
+            runtimeclassname: null
+            enableservicelinks: null
+            preemptionpolicy: null
+            overhead: {}
+            topologyspreadconstraints: []
+            sethostnameasfqdn: null
+            os: null
+            hostusers: null
+            schedulinggates: []
+            resourceclaims: []
+    strategy:
+        type: Recreate
+        rollingupdate: null
+    minreadyseconds: 0
+    revisionhistorylimit: null
+    paused: false
+    progressdeadlineseconds: null
+status:
+    observedgeneration: 0
+    replicas: 0
+    updatedreplicas: 0
+    readyreplicas: 0
+    availablereplicas: 0
+    unavailablereplicas: 0
+    conditions: []
+    collisioncount: null

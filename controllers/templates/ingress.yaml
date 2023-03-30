@@ -1,0 +1,52 @@
+typemeta:
+    kind: Ingress
+    apiversion: ""
+objectmeta:
+    name: {{ .Name }}-ingress
+    generatename: ""
+    namespace: {{ .Namespace }}
+    selflink: ""
+    uid: ""
+    resourceversion: ""
+    generation: 0
+    creationtimestamp: "0001-01-01T00:00:00Z"
+    deletiontimestamp: null
+    deletiongraceperiodseconds: null
+    labels: {}
+    {{if .Spec.CertManInssuer  }}{{if .Spec.Path }}annotations:
+        acme.cert-manager.io/http01-edit-in-place: "true"
+        cert-manager.io/issuer: {{ .Spec.CertManInssuer }}
+        nginx.ingress.kubernetes.io/rewrite-target: /$2{{- end}}{{- end}}{{if .Spec.CertManInssuer  }}{{if not .Spec.Path  }}annotations:
+        acme.cert-manager.io/http01-edit-in-place: "true"
+        cert-manager.io/issuer: {{ .Spec.CertManInssuer }}
+    {{- end}}{{- end}}{{if not .Spec.CertManInssuer  }}{{if .Spec.Path  }}annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+    {{- end}}{{- end}}{{if not .Spec.CertManInssuer  }}{{if not .Spec.Path  }}annotations: {} 
+    {{- end}}{{- end}}
+    ownerreferences: []
+    finalizers: []
+    managedfields: []
+spec:
+    ingressclassname: null
+    defaultbackend: null
+    tls:{{if .Spec.CertManInssuer }}
+        - hosts:
+            - {{ .Spec.Host }}
+          secretname: {{ .Spec.Host }}-tls{{- else}} []{{- end}}
+    rules:
+        - host: {{ .Spec.Host }}
+          ingressrulevalue:
+            http:
+                paths:
+                    - path: {{if .Spec.Path }}{{ .Spec.Path }}(/|$)(.*){{- else}}/{{- end}}
+                      pathtype: Prefix
+                      backend:
+                        service:
+                            name: {{ .Name }}-svc
+                            port:
+                                name: ""
+                                number: {{ .Spec.Port }}
+                        resource: null
+status:
+    loadbalancer:
+        ingress: []

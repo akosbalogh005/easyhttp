@@ -20,7 +20,9 @@ import (
 	"context"
 	"fmt"
 
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -28,6 +30,18 @@ import (
 
 	httpapiv1 "github.com/akosbalogh005/easyhttp-operator/api/v1"
 )
+
+//go:generate mockery --name=ReconcilerClientIF
+type ReconcilerClientIF interface {
+	client.Reader
+	client.Writer
+	client.StatusClient
+	client.SubResourceClientConstructor
+	// Scheme returns the scheme this client is using.
+	Scheme() *runtime.Scheme
+	// RESTMapper returns the rest this client is using.
+	RESTMapper() meta.RESTMapper
+}
 
 // EasyHttpReconciler reconciles a EasyHttp object
 type EasyHttpReconciler struct {
@@ -85,11 +99,108 @@ func (r *EasyHttpReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		clientResource.OwnerReferences, clientResource.Status, clientResource.Spec))
 
 	// 1st step is check if the deployment is ready.
+	ret, err := r.CheckDeployment(ctx, req, specHasChanged, clientResource)
+	if err != nil {
+		return ret, err
+	}
+
+	// 2nd step is the service
+	ret, svc, err := r.CheckService(ctx, req, specHasChanged, clientResource)
+	if err != nil {
+		return ret, err
+	}
+
+	// 3rd step is the ingress
+	ret, err = r.CheckIngress(ctx, req, specHasChanged, clientResource, svc)
+	if err != nil {
+		return ret, err
+	}
+
+	if clientResource.Spec.CertManInssuer == "" {
+		log.Info("Certificate manager is disabled. Add certManIssuer to kind spec if necessary")
+	} else {
+		log.Info(fmt.Sprintf("Using Certificate manager: %v", clientResource.Spec.CertManInssuer))
+	}
+
+	return ctrl.Result{}, nil
+	//return ctrl.Result{Requeue: true}, nil
+	//return ctrl.Result{RequeueAfter: time.Minute}, nil
+}
+
+func (r *EasyHttpReconciler) CheckIngress(ctx context.Context, req ctrl.Request, specHasChanged bool, clientResource *httpapiv1.EasyHttp, svc *v1.Service) (ctrl.Result, error) {
+	log := log.FromContext(ctx)
+	ing := initIngress(clientResource, svc.Name)
+
+	// try to get the current service  ...
+	err := r.Client.Get(ctx, client.ObjectKey{Namespace: ing.Namespace, Name: ing.ObjectMeta.Name}, ing)
+
+	isNew := false
+	if err != nil && errors.IsNotFound(err) {
+		// (re)deploy
+		isNew = true
+		clientResource.Status.IsIngressOK = false
+	} else if err != nil {
+		return ctrl.Result{Requeue: true}, fmt.Errorf("cannot get ingress, retying later. %v", err)
+	} else {
+		// when current found, update the Spec in order to refresh specification if needed
+		if specHasChanged {
+			newIng := initIngress(clientResource, svc.Name)
+			ing.Spec = *newIng.Spec.DeepCopy()
+		}
+	}
+
+	if !clientResource.Status.IsIngressOK {
+		err = r.createOrUpdate(ctx, req, ing, clientResource, &clientResource.Status.IsIngressOK, isNew)
+		if err != nil {
+			return ctrl.Result{Requeue: true}, fmt.Errorf("failed to create ingress. %v", err)
+		}
+		log.Info("Ingress has been successfuly created/updated :)")
+	}
+	log.Info(fmt.Sprintf("Current Ingress is: %v (%v)", ing.Name, ing.UID))
+	return ctrl.Result{}, nil
+}
+
+func (r *EasyHttpReconciler) CheckService(ctx context.Context, req ctrl.Request, specHasChanged bool, clientResource *httpapiv1.EasyHttp) (ctrl.Result, *v1.Service, error) {
+	log := log.FromContext(ctx)
+	svc := initService(clientResource)
+
+	// try to get the current service  ...
+	err := r.Client.Get(ctx, client.ObjectKey{Namespace: svc.Namespace, Name: svc.ObjectMeta.Name}, svc)
+
+	isNew := false
+	if err != nil && errors.IsNotFound(err) {
+		// (re)deploy
+		isNew = true
+		clientResource.Status.IsSvcOK = false
+	} else if err != nil {
+		return ctrl.Result{Requeue: true}, svc, fmt.Errorf("cannot get service, retying later. %v", err)
+	} else {
+		// when current found, update the Spec in order to refresh specification if needed
+		if specHasChanged {
+			newSvc := initService(clientResource)
+			svc.Spec = *newSvc.Spec.DeepCopy()
+		}
+	}
+
+	if !clientResource.Status.IsSvcOK {
+		err = r.createOrUpdate(ctx, req, svc, clientResource, &clientResource.Status.IsSvcOK, isNew)
+		if err != nil {
+			return ctrl.Result{Requeue: true}, svc, fmt.Errorf("failed to create service. %v", err)
+		}
+		log.Info("Service has been successfuly created/updated :)")
+	}
+	log.Info(fmt.Sprintf("Current Service is: %v (%v)", svc.Name, svc.UID))
+	return ctrl.Result{}, svc, nil
+}
+
+func (r *EasyHttpReconciler) CheckDeployment(ctx context.Context, req ctrl.Request, specHasChanged bool, clientResource *httpapiv1.EasyHttp) (ctrl.Result, error) {
+	log := log.FromContext(ctx)
+
 	// init deployment struct
 	dep := initDeployment(clientResource)
 
 	// try to get the current running deployment ...
-	err = r.Client.Get(ctx, client.ObjectKey{Namespace: dep.Namespace, Name: dep.ObjectMeta.Name}, dep)
+	err := r.Client.Get(ctx, client.ObjectKey{Namespace: dep.Namespace, Name: dep.ObjectMeta.Name}, dep)
 
 	isNew := false
 	if err != nil && errors.IsNotFound(err) {
@@ -115,75 +226,7 @@ func (r *EasyHttpReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}
 	log.Info(fmt.Sprintf("Current Deployment is: %v (%v)", dep.Name, dep.UID))
 
-	// 2nd step is the service
-	svc := initService(clientResource)
-
-	// try to get the current service  ...
-	err = r.Client.Get(ctx, client.ObjectKey{Namespace: svc.Namespace, Name: svc.ObjectMeta.Name}, svc)
-
-	isNew = false
-	if err != nil && errors.IsNotFound(err) {
-		// (re)deploy
-		isNew = true
-		clientResource.Status.IsSvcOK = false
-	} else if err != nil {
-		return ctrl.Result{Requeue: true}, fmt.Errorf("cannot get service, retying later. %v", err)
-	} else {
-		// when current found, update the Spec in order to refresh specification if needed
-		if specHasChanged {
-			newSvc := initService(clientResource)
-			svc.Spec = *newSvc.Spec.DeepCopy()
-		}
-	}
-
-	if !clientResource.Status.IsSvcOK {
-		err = r.createOrUpdate(ctx, req, svc, clientResource, &clientResource.Status.IsSvcOK, isNew)
-		if err != nil {
-			return ctrl.Result{Requeue: true}, fmt.Errorf("failed to create service. %v", err)
-		}
-		log.Info("Service has been successfuly created/updated :)")
-	}
-	log.Info(fmt.Sprintf("Current Service is: %v (%v)", svc.Name, svc.UID))
-
-	// 3rd step is the ingress
-	ing := initIngress(clientResource, svc.Name)
-
-	// try to get the current service  ...
-	err = r.Client.Get(ctx, client.ObjectKey{Namespace: ing.Namespace, Name: ing.ObjectMeta.Name}, ing)
-
-	isNew = false
-	if err != nil && errors.IsNotFound(err) {
-		// (re)deploy
-		isNew = true
-		clientResource.Status.IsIngressOK = false
-	} else if err != nil {
-		return ctrl.Result{Requeue: true}, fmt.Errorf("cannot get ingress, retying later. %v", err)
-	} else {
-		// when current found, update the Spec in order to refresh specification if needed
-		if specHasChanged {
-			newIng := initIngress(clientResource, svc.Name)
-			ing.Spec = *newIng.Spec.DeepCopy()
-		}
-	}
-
-	if !clientResource.Status.IsIngressOK {
-		err = r.createOrUpdate(ctx, req, ing, clientResource, &clientResource.Status.IsIngressOK, isNew)
-		if err != nil {
-			return ctrl.Result{Requeue: true}, fmt.Errorf("failed to create ingress. %v", err)
-		}
-		log.Info("Ingress has been successfuly created/updated :)")
-	}
-	log.Info(fmt.Sprintf("Current Ingress is: %v (%v)", ing.Name, ing.UID))
-
-	if clientResource.Spec.CertManInssuer == "" {
-		log.Info("Certificate manager is disabled. Add certManIssuer to kind spec if necessary")
-	} else {
-		log.Info(fmt.Sprintf("Using Certificate manager: %v", clientResource.Spec.CertManInssuer))
-	}
-
 	return ctrl.Result{}, nil
-	//return ctrl.Result{Requeue: true}, nil
-	//return ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
 func (r *EasyHttpReconciler) createOrUpdate(ctx context.Context, req ctrl.Request, obj client.Object, clientResource *httpapiv1.EasyHttp, statusFlag *bool, isNew bool) error {

@@ -1,0 +1,53 @@
+typemeta:
+    kind: ""
+    apiversion: apps/v1
+objectmeta:
+    name: {{.Name}}-svc
+    generatename: ""
+    namespace: {{.Namespace}}
+    selflink: ""
+    uid: ""
+    resourceversion: ""
+    generation: 0
+    creationtimestamp: "0001-01-01T00:00:00Z"
+    deletiontimestamp: null
+    deletiongraceperiodseconds: null
+    labels: {}
+    annotations: {}
+    ownerreferences: []
+    finalizers: []
+    managedfields: []
+spec:
+    ports:
+        - name: http
+          protocol: TCP
+          appprotocol: null
+          port: {{.Spec.Port}}
+          targetport:
+            type: 0
+            intval: 0
+            strval: ""
+          nodeport: 0
+    selector:
+        app: {{.Name}}
+    clusterip: ""
+    clusterips: []
+    type: ""
+    externalips: []
+    sessionaffinity: ""
+    loadbalancerip: ""
+    loadbalancersourceranges: []
+    externalname: ""
+    externaltrafficpolicy: ""
+    healthchecknodeport: 0
+    publishnotreadyaddresses: false
+    sessionaffinityconfig: null
+    ipfamilies: []
+    ipfamilypolicy: null
+    allocateloadbalancernodeports: null
+    loadbalancerclass: null
+    internaltrafficpolicy: null
+status:
+    loadbalancer:
+        ingress: []
+    conditions: []
