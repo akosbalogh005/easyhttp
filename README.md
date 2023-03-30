@@ -138,9 +138,9 @@ spec:
 
 The operator can be installed using pre-defined kubernetes configuration. The operator will be installed into 'easyhttp-system' namespace.
 
-The following example install v0.2 of EasyHttp operator (CRD and controller)
+The following example install v0.3 of EasyHttp operator (CRD and controller)
 ```
-kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/0.2/config/easyhttp-operator.yml
+kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/0.3/config/easyhttp-operator.yml
 ```
 
 The git repo is [here](https://github.com/akosbalogh005/easyhttp-operator/). 
