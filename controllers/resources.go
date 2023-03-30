@@ -78,7 +78,10 @@ func initIngress(clientResource *httpapiv1.EasyHttp, serviceName string) *betav1
 		ing.Annotations["cert-manager.io/issuer"] = clientResource.Spec.CertManInssuer
 	}
 	if clientResource.Spec.Path != "" && clientResource.Spec.Path != "/" {
-		ing.Annotations = map[string]string{"nginx.ingress.kubernetes.io/rewrite-target": "/$2"}
+		if len(ing.Annotations) == 0 {
+			ing.Annotations = make(map[string]string)
+		}
+		ing.Annotations["nginx.ingress.kubernetes.io/rewrite-target"] = "/$2"
 	}
 
 	pfrx := betav1.PathTypePrefix
@@ -123,23 +126,3 @@ func initIngress(clientResource *httpapiv1.EasyHttp, serviceName string) *betav1
 
 	return &ing
 }
-
-/**
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: example-ingress1
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  rules:
-  - http:
-      paths:
-      - pathType: Prefix
-        path: /testapi2(/|$)(.*)
-        backend:
-          service:
-            name: testapi-1-svc
-            port:
-              number: 8080
-**/

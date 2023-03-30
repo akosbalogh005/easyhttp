@@ -18,3 +18,4 @@ spec:
   env:
     PORT: "8080"
   certManIssuer: "letsencrypt-staging"
+  path: "/app"
