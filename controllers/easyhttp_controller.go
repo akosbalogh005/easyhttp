@@ -31,6 +31,8 @@ import (
 	httpapiv1 "github.com/akosbalogh005/easyhttp-operator/api/v1"
 )
 
+// for mocking purposes
+//
 //go:generate mockery --name=ReconcilerClientIF
 type ReconcilerClientIF interface {
 	client.Reader
@@ -41,6 +43,13 @@ type ReconcilerClientIF interface {
 	Scheme() *runtime.Scheme
 	// RESTMapper returns the rest this client is using.
 	RESTMapper() meta.RESTMapper
+}
+
+// for mocking purposes
+//
+//go:generate mockery --name=SubResourceWriterIF
+type SubResourceWriterIF interface {
+	client.SubResourceWriter
 }
 
 // EasyHttpReconciler reconciles a EasyHttp object
