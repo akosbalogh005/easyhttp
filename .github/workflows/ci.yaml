@@ -1,14 +1,8 @@
 name: CI
 on:
-  pull_request:
-    branches: [main]
-    paths-ignore:
-      - "README.md"
-      - "charts/**"
-      - ".github/workflows/chart-lint.yml"
-      - ".github/workflows/chart-release.yml"
-      - ".github/workflows/docker.yml"
-
+  push:
+    branches:
+      - '*'
 jobs:
   build:
     name: Build
@@ -25,4 +19,7 @@ jobs:
 
       - name: Buld code
         run: make
+
+      - name: Test
+        run: make test
 
