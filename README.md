@@ -143,6 +143,11 @@ The following example install v0.3 of EasyHttp operator (CRD and controller)
 kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/0.3/config/easyhttp-operator.yml
 ```
 
+The following example install the latest of EasyHttp operator (CRD and controller)
+```
+kubectl apply -f https://raw.githubusercontent.com/akosbalogh005/easyhttp-operator/main/config/easyhttp-operator_latest.yml
+```
+
 The git repo is [here](https://github.com/akosbalogh005/easyhttp-operator/). 
 The package is stored in [ghcr.io](https://github.com/akosbalogh005/easyhttp-operator/pkgs/container/easyhttp) repository.
 
@@ -241,7 +246,7 @@ limitations under the License.
 
 The following features / ideas will be implemented in the next version:
 - rewrite functionality with not only nginx ingress conroller
-- Implement proper unittests
+- Implement more (negative) unittest
 - Implement acceptance tests
 - Releases:
   - create helm chart for operator after tagging
