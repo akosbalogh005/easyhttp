@@ -65,6 +65,10 @@ vet: ## Run go vet against code.
 test: manifests generate fmt vet envtest ## Run tests.
 	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test `go list ./... | egrep -v "${SKIP_UNITTESTS_ON_DIRS}"` -coverprofile cover.out
 
+.PHONY: lint
+lint: ## Un golang lint
+	golangci-lint run -v ./...
+
 ##@ Build
 
 .PHONY: build
