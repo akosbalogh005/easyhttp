@@ -1,3 +1,6 @@
+[![CI](https://github.com/akosbalogh005/easyhttp-operator/actions/workflows/ci.yaml/badge.svg)](https://github.com/akosbalogh005/easyhttp-operator/actions/workflows/ci.yaml)
+[![Docker](https://github.com/akosbalogh005/easyhttp-operator/actions/workflows/docker.yaml/badge.svg)](https://github.com/akosbalogh005/easyhttp-operator/actions/workflows/docker.yaml)
+
 # easyhttp
 
 Kuberneres Operator. The main purpose of this operator to easy deploy HTTP application your kubernetes cluster. 
