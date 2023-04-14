@@ -7,7 +7,7 @@ import (
 	httpapiv1 "github.com/akosbalogh005/easyhttp-operator/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	betav1 "k8s.io/api/networking/v1"
+	netv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -65,9 +65,9 @@ func initDeployment(clientResource *httpapiv1.EasyHttp) *appsv1.Deployment {
 }
 
 // initIngress creates deployment based on clientResource
-func initIngress(clientResource *httpapiv1.EasyHttp, serviceName string) *betav1.Ingress {
+func initIngress(clientResource *httpapiv1.EasyHttp, serviceName string) *netv1.Ingress {
 
-	ing := betav1.Ingress{}
+	ing := netv1.Ingress{}
 	//ing.APIVersion = "networking.k8s.io/v1"
 	ing.Kind = "Ingress"
 	ing.Name = clientResource.Name + "-ingress"
@@ -84,42 +84,42 @@ func initIngress(clientResource *httpapiv1.EasyHttp, serviceName string) *betav1
 		ing.Annotations["nginx.ingress.kubernetes.io/rewrite-target"] = "/$2"
 	}
 
-	pfrx := betav1.PathTypePrefix
+	pfrx := netv1.PathTypePrefix
 
 	p := "/"
 	if clientResource.Spec.Path != "" {
 		p = clientResource.Spec.Path + "(/|$)(.*)"
 	}
 
-	ingressPath := betav1.HTTPIngressPath{
+	ingressPath := netv1.HTTPIngressPath{
 		Path:     p,
 		PathType: &pfrx,
-		Backend: betav1.IngressBackend{
-			Service: &betav1.IngressServiceBackend{
+		Backend: netv1.IngressBackend{
+			Service: &netv1.IngressServiceBackend{
 				Name: serviceName,
-				Port: betav1.ServiceBackendPort{
+				Port: netv1.ServiceBackendPort{
 					Number: int32(clientResource.Spec.Port),
 				},
 			},
 		},
 	}
-	httpIngressRuleValue := betav1.HTTPIngressRuleValue{Paths: []betav1.HTTPIngressPath{ingressPath}}
-	rule := betav1.IngressRule{}
+	httpIngressRuleValue := netv1.HTTPIngressRuleValue{Paths: []netv1.HTTPIngressPath{ingressPath}}
+	rule := netv1.IngressRule{}
 	rule.Host = clientResource.Spec.Host
 	rule.IngressRuleValue.HTTP = &httpIngressRuleValue
 
 	if clientResource.Spec.CertManInssuer != "" {
-		tls := betav1.IngressTLS{
+		tls := netv1.IngressTLS{
 			Hosts:      []string{clientResource.Spec.Host},
 			SecretName: strings.ReplaceAll(clientResource.Spec.Host, ".", "-") + "-tls",
 		}
-		ing.Spec = betav1.IngressSpec{
-			Rules: []betav1.IngressRule{rule},
-			TLS:   []betav1.IngressTLS{tls},
+		ing.Spec = netv1.IngressSpec{
+			Rules: []netv1.IngressRule{rule},
+			TLS:   []netv1.IngressTLS{tls},
 		}
 	} else {
-		ing.Spec = betav1.IngressSpec{
-			Rules: []betav1.IngressRule{rule},
+		ing.Spec = netv1.IngressSpec{
+			Rules: []netv1.IngressRule{rule},
 		}
 
 	}

@@ -20,7 +20,9 @@ import (
 	"context"
 	"fmt"
 
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	netv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -125,15 +127,20 @@ func (r *EasyHttpReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ret, err
 	}
 
+	err = r.Status().Update(context.TODO(), clientResource)
+	if err != nil {
+		log.Error(err, "failed to update client status")
+	}
+
 	if clientResource.Spec.CertManInssuer == "" {
 		log.Info("Certificate manager is disabled. Add certManIssuer to kind spec if necessary")
 	} else {
 		log.Info(fmt.Sprintf("Using Certificate manager: %v", clientResource.Spec.CertManInssuer))
 	}
 
-	return ctrl.Result{}, nil
+	return ctrl.Result{Requeue: false}, nil
 	//return ctrl.Result{Requeue: true}, nil
-	//return ctrl.Result{RequeueAfter: time.Minute}, nil
+	//return ctrl.Result{RequeueAfter: time.Minute * 60}, nil
 }
 
 func (r *EasyHttpReconciler) CheckIngress(ctx context.Context, req ctrl.Request, specHasChanged bool, clientResource *httpapiv1.EasyHttp, svc *v1.Service) (ctrl.Result, error) {
@@ -155,6 +162,7 @@ func (r *EasyHttpReconciler) CheckIngress(ctx context.Context, req ctrl.Request,
 		if specHasChanged {
 			newIng := initIngress(clientResource, svc.Name)
 			ing.Spec = *newIng.Spec.DeepCopy()
+			ing.Annotations = newIng.Annotations
 		}
 	}
 
@@ -275,6 +283,8 @@ func (r *EasyHttpReconciler) createOrUpdate(ctx context.Context, req ctrl.Reques
 func (r *EasyHttpReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&httpapiv1.EasyHttp{}).
-		//Owns(&appsv1.Deployment{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&v1.Service{}).
+		Owns(&netv1.Ingress{}).
 		Complete(r)
 }
